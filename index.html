@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faculty Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f9ff;
+    --navy: #00254b;
+    --blue: #065fae;
+    --ink: #0b1c30;
+    --muted: #43474f;
+    --placeholder: #74777f;
+    --chip: #e5eeff;
+    --panel: #eff4ff;
+    --green: #16a36a;
+    --amber: #e99a32;
+    --red: #dc5252;
+    --grey: #6b7280;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 64px 0 112px;
+  }
+  button, input { font-family: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+  svg { display: block; flex-shrink: 0; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  /* ---------- Header ---------- */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    background: rgba(248,249,255,.9);
+    -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+    box-shadow: 0 1px 8px rgba(0,0,0,.04);
+  }
+  .header-inner {
+    height: 64px; max-width: 960px; margin: 0 auto; padding: 0 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .logo { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--navy); font-weight: 700; font-size: 15px; letter-spacing: -.2px; }
+  .logo-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--navy); color: #fff; display: grid; place-items: center; }
+  .logo-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-tag { display: flex; flex-direction: column; align-items: flex-start; }
+  .brand-tag .pill { background: #dce9ff; color: var(--navy); font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .275px; padding: 2px 6px; border-radius: 9999px; }
+  .brand-tag .sub { font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; color: var(--muted); padding-left: 4px; }
+  .header-actions { display: flex; align-items: center; gap: 4px; }
+  .icon-btn { width: 44px; height: 44px; border-radius: 9999px; display: grid; place-items: center; position: relative; color: var(--navy); }
+  .notif-dot { position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; border-radius: 9999px; background: #ba1a1a; box-shadow: 0 0 0 2px var(--bg); }
+  .profile { width: 32px; height: 32px; border-radius: 9999px; overflow: hidden; background: #dce9ff; position: relative; display: grid; place-items: center; font-size: 12px; font-weight: 600; color: var(--navy); }
+  .profile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------- Layout ---------- */
+  .container { max-width: 960px; margin: 0 auto; padding: 16px 16px 0; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; background: var(--navy); border-radius: 12px; padding: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  .hero-glow { position: absolute; top: -32px; right: -32px; width: 144px; height: 144px; border-radius: 9999px; background: rgba(109,170,255,.2); filter: blur(40px); pointer-events: none; }
+  .hero-body { position: relative; display: flex; flex-direction: column; gap: 4px; }
+  .portal-row { display: flex; align-items: center; gap: 4px; }
+  .portal-icon { background: rgba(6,95,174,.3); border-radius: 9999px; padding: 4px; color: #d3e4fe; display: grid; place-items: center; }
+  .portal-label { font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .275px; text-transform: uppercase; color: #d3e4fe; }
+  .hero h1 { font-size: 24px; font-weight: 600; line-height: 32px; letter-spacing: -.6px; color: #fff; padding-top: 4px; }
+  .hero-dept { font-size: 12px; font-weight: 600; line-height: 16px; color: #a6c8ff; }
+  .hero-desc { font-size: 12px; font-weight: 400; line-height: 19.5px; color: rgba(220,233,255,.9); padding-top: 2px; max-width: 520px; }
+  .live-status {
+    margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border-radius: 8px;
+    background: rgba(255,255,255,.1); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .live-left { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .live-dot { width: 10px; height: 10px; border-radius: 9999px; background: #80fab9; flex-shrink: 0; margin-right: 4px; }
+  .live-label { font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; color: #d3e4fe; }
+  .live-value { font-size: 12px; font-weight: 600; line-height: 16px; color: #fff; }
+  .live-check { color: #d3e4fe; }
+  .btn-primary {
+    margin-top: 8px; width: 100%; height: 44px; border-radius: 8px; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 14px; font-weight: 600; line-height: 20px;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.05)); transition: background .15s;
+  }
+  .btn-primary:hover { background: #0a6fc8; }
+  .btn-primary:disabled { opacity: .7; cursor: not-allowed; }
+
+  /* ---------- Stats ---------- */
+  .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .stat { background: #fff; border-radius: 12px; padding: 8px; min-height: 86px; display: flex; flex-direction: column; justify-content: space-between; filter: drop-shadow(0 1px 1px rgba(0,0,0,.05)); }
+  .stat:nth-child(-n+2) { min-height: 100px; }
+  .stat-top { display: flex; align-items: center; justify-content: space-between; }
+  .stat-label { font-size: 11px; font-weight: 500; line-height: 14px; letter-spacing: .22px; color: var(--muted); }
+  .stat-icon { width: 28px; height: 28px; border-radius: 9999px; background: var(--chip); color: var(--navy); display: grid; place-items: center; }
+  .dot12 { width: 12px; height: 12px; border-radius: 9999px; }
+  .stat-body { padding-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .stat-num { font-size: 28px; font-weight: 700; line-height: 28px; }
+  .stat-sub { font-size: 12px; font-weight: 400; line-height: 16px; color: var(--muted); }
+  .c-green { color: var(--green); } .c-amber { color: var(--amber); } .c-red { color: var(--red); }
+  .bg-green { background: var(--green); } .bg-amber { background: var(--amber); } .bg-red { background: var(--red); } .bg-grey { background: var(--grey); }
+
+  /* ---------- Search + chips ---------- */
+  .filters { display: flex; flex-direction: column; gap: 8px; }
+  .search { position: relative; }
+  .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--placeholder); }
+  .search input {
+    width: 100%; height: 44px; padding: 0 16px 0 40px; border: 0; border-radius: 8px; background: #fff; font-size: 14px; color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  }
+  .search input::placeholder { color: var(--placeholder); }
+  .chips { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 9999px; background: var(--chip);
+    color: var(--muted); font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; white-space: nowrap;
+  }
+  .chip.active { background: var(--navy); color: #fff; }
+  .chip .dot8 { width: 8px; height: 8px; border-radius: 9999px; background: var(--green); }
+
+  /* ---------- Section header ---------- */
+  .section-head { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
+  .section-head h2 { font-size: 18px; font-weight: 600; line-height: 24px; color: var(--navy); }
+  .live-feed { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; color: var(--muted); }
+
+  /* ---------- Faculty cards ---------- */
+  .faculty-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.05)); }
+  .card[hidden] { display: none; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .person { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .avatar { position: relative; width: 48px; height: 48px; flex-shrink: 0; }
+  .avatar .photo { position: absolute; inset: 0; border-radius: 9999px; overflow: hidden; background: #dce9ff; display: grid; place-items: center; font-size: 16px; font-weight: 600; color: var(--navy); }
+  .avatar .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .avatar .photo img.crop { left: -17.02%; width: 134.03%; }
+  .avatar .badge { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; border-radius: 9999px; box-shadow: 0 0 0 2px #fff; }
+  .person-text { min-width: 0; }
+  .person-name { font-size: 18px; font-weight: 600; line-height: 24px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .person-role { font-size: 12px; font-weight: 400; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .status-pill { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; flex-shrink: 0; }
+  .status-pill i { width: 8px; height: 8px; border-radius: 9999px; display: block; }
+  .pill-green { background: #ebf8f2; color: var(--green); } .pill-green i { background: var(--green); }
+  .pill-amber { background: #fef5ea; color: var(--amber); } .pill-amber i { background: var(--amber); }
+  .pill-grey { background: #f3f4f6; color: var(--grey); } .pill-grey i { background: var(--grey); }
+  .pill-red { background: #fdeeee; color: var(--red); } .pill-red i { background: var(--red); }
+  .location { background: var(--panel); border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .loc-left { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12px; font-weight: 600; line-height: 16px; color: var(--ink); }
+  .loc-left.muted { color: var(--muted); }
+  .loc-left span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .loc-left svg { color: var(--navy); }
+  .loc-left.muted svg { color: var(--muted); }
+  .loc-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; color: var(--muted); white-space: nowrap; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 4px; }
+  .updated { font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; color: var(--muted); }
+  .btn-detail { height: 32px; padding: 0 12px; border-radius: 8px; background: var(--chip); color: var(--navy); display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; white-space: nowrap; transition: background .15s; }
+  .btn-detail:hover { background: #d3e4fe; }
+  .empty { display: none; text-align: center; padding: 24px 16px; font-size: 13px; color: var(--muted); background: #fff; border-radius: 12px; }
+  .empty.show { display: block; }
+
+  /* ---------- Contact form (added section) ---------- */
+  .form-card { background: #fff; border-radius: 12px; padding: 16px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.05)); display: flex; flex-direction: column; gap: 12px; }
+  .form-card h2 { font-size: 18px; font-weight: 600; line-height: 24px; color: var(--navy); }
+  .form-card p.lead { font-size: 12px; line-height: 19.5px; color: var(--muted); margin-top: -8px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; color: var(--muted); }
+  .field input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid transparent; border-radius: 8px; background: var(--panel); font-size: 14px; color: var(--ink); }
+  .field input::placeholder { color: var(--placeholder); }
+  .field input:focus { outline: none; border-color: var(--blue); background: #fff; }
+  .form-card .btn-primary { margin-top: 0; }
+  .form-msg { display: none; font-size: 12px; font-weight: 600; line-height: 16px; padding: 10px 12px; border-radius: 8px; }
+  .form-msg.show { display: block; }
+  .form-msg.ok { background: #ebf8f2; color: var(--green); }
+  .form-msg.err { background: #fdeeee; color: var(--red); }
+
+  /* ---------- Info note ---------- */
+  .note { padding-top: 4px; }
+  .note-box { background: var(--panel); border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 8px; }
+  .note-box svg { color: var(--blue); margin-top: 1px; }
+  .note-box p { font-size: 12px; line-height: 19.5px; color: var(--muted); }
+
+  /* ---------- Bottom nav ---------- */
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: rgba(248,249,255,.9); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+    box-shadow: 0 -2px 10px rgba(0,0,0,.04); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .nav-inner { height: 64px; max-width: 960px; margin: 0 auto; padding: 0 4px; display: flex; align-items: center; justify-content: space-around; }
+  .nav a { min-width: 56px; height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--muted); font-size: 11px; font-weight: 600; line-height: 14px; letter-spacing: .22px; }
+  .nav a.active { color: #193b65; }
+  .nav a svg { width: 20px; height: 20px; }
+
+  /* ---------- Responsive ---------- */
+  @media (min-width: 640px) {
+    .container { padding: 24px 24px 0; gap: 20px; }
+    .header-inner, .nav-inner { padding-left: 24px; padding-right: 24px; }
+    .hero { padding: 24px; }
+    .hero h1 { font-size: 30px; line-height: 38px; }
+    .hero-dept, .hero-desc { font-size: 14px; line-height: 22px; }
+    .btn-primary.hero-btn { width: auto; padding: 0 24px; display: inline-flex; }
+    .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .stat:nth-child(-n+2), .stat { min-height: 100px; }
+    .faculty-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .form-card { max-width: 520px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">
+        <span class="logo-mark">
+          <svg width="16" height="14" viewBox="0 0 24 20" fill="currentColor"><path d="M12 0 0 6l12 6 10-5v7h2V6L12 0zM4 11.2v4.3c0 2.2 3.6 4.5 8 4.5s8-2.3 8-4.5v-4.3l-8 4-8-4z"/></svg>
+        </span>
+        <span class="logo-text">Campus FacultySync</span>
+      </div>
+      <div class="brand-tag">
+        <span class="pill">Faculty</span>
+        <span class="sub">Dashboard</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="15" height="18" viewBox="0 0 16 20" fill="currentColor"><path d="M8 20c1.1 0 2-.9 2-2H6c0 1.1.9 2 2 2zm6-6V9c0-3.1-1.6-5.6-4.5-6.3V2a1.5 1.5 0 0 0-3 0v.7C3.6 3.4 2 5.9 2 9v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <a class="icon-btn" href="#" aria-label="Profile">
+        <span class="profile">EV<img src="https://www.figma.com/api/mcp/asset/2e090c23-e11c-411f-8c96-3e3ea811001e.png" alt="" onerror="this.remove()"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-body">
+      <div class="portal-row">
+        <span class="portal-icon">
+          <svg width="15" height="12" viewBox="0 0 24 20" fill="currentColor"><path d="M12 0 0 6l12 6 10-5v7h2V6L12 0zM4 11.2v4.3c0 2.2 3.6 4.5 8 4.5s8-2.3 8-4.5v-4.3l-8 4-8-4z"/></svg>
+        </span>
+        <span class="portal-label">Faculty Portal</span>
+      </div>
+      <h1>Good Morning, Dr. Eleanor Vance</h1>
+      <p class="hero-dept">Department of Computer Science &amp; Engineering | Senior Professor</p>
+      <p class="hero-desc">Manage your availability and help students and colleagues find you easily.</p>
+      <div class="live-status">
+        <div class="live-left">
+          <span class="live-dot"></span>
+          <div>
+            <div class="live-label">Live Status</div>
+            <div class="live-value">Current: Available (Room 304) until 12:30 PM</div>
+          </div>
+        </div>
+        <svg class="live-check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12.5 3 3 5-6"/></svg>
+      </div>
+      <button class="btn-primary hero-btn" type="button">
+        <svg width="13" height="17" viewBox="0 0 14 18" fill="currentColor"><path d="M8 0 0 10h5.5L4.5 18 14 7H8.5L8 0z"/></svg>
+        <span>Update My Availability</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats" aria-label="Faculty summary">
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-label">Total Faculty</span>
+        <span class="stat-icon"><svg width="13" height="12" viewBox="0 0 24 20" fill="currentColor"><path d="M8 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 12c-3 0-8 1.5-8 4.5V19h16v-2.5C16 13.5 11 12 8 12zm8 0c-.4 0-.8 0-1.3.1 1.5 1 2.3 2.3 2.3 4.4V19h7v-2.5c0-2.7-4.3-4.5-8-4.5z"/></svg></span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num">85</div>
+        <div class="stat-sub">All Departments</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-label">Available Now</span>
+        <span class="dot12 bg-green"></span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num c-green">32</div>
+        <div class="stat-sub">38% on campus</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-label">Currently Busy</span>
+        <span class="dot12 bg-amber"></span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num c-amber">28</div>
+        <div class="stat-sub">Classes &amp; meetings</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-label">Unavailable / Leave</span>
+        <span class="dot12 bg-red"></span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num c-red">25</div>
+        <div class="stat-sub">Off campus / leave</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search + filter chips -->
+  <section class="filters">
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="Search faculty by name or room..." autocomplete="off" aria-label="Search faculty by name or room">
+    </label>
+    <div class="chips" id="chips">
+      <button class="chip active" type="button" data-dept="all">All (85)</button>
+      <button class="chip" type="button" data-dept="Computer Science">Computer Science (18)</button>
+      <button class="chip" type="button" data-dept="Electrical">Electrical (14)</button>
+      <button class="chip" type="button" data-dept="Mechanical">Mechanical (16)</button>
+      <button class="chip" type="button" data-available="1"><span class="dot8"></span>Available Only</button>
+    </div>
+  </section>
+
+  <!-- Section heading -->
+  <div class="section-head">
+    <h2>Live Faculty Status</h2>
+    <div class="live-feed">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M3 21v-5h5M21 3v5h-5"/></svg>
+      Live Feed
+    </div>
+  </div>
+
+  <!-- Faculty cards -->
+  <section class="faculty-list" id="list">
+
+    <article class="card" data-dept="Computer Science" data-status="available">
+      <div class="card-top">
+        <div class="person">
+          <div class="avatar">
+            <div class="photo">AK<img src="https://www.figma.com/api/mcp/asset/1209143d-786d-4966-b406-657b18cce213.png" alt="Dr. Arun Kumar" onerror="this.remove()"></div>
+            <span class="badge bg-green"></span>
+          </div>
+          <div class="person-text">
+            <div class="person-name">Dr. Arun Kumar</div>
+            <div class="person-role">Computer Science • Professor</div>
+          </div>
+        </div>
+        <span class="status-pill pill-green"><i></i>Available</span>
+      </div>
+      <div class="location">
+        <div class="loc-left">
+          <svg width="11" height="13" viewBox="0 0 16 20" fill="currentColor"><path d="M8 0a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+          <span>Staff Room 204</span>
+        </div>
+        <div class="loc-right">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Until 12:30 PM
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="updated">Updated: 10:15 AM (15m ago)</span>
+        <button class="btn-detail" type="button">View Detail
+          <svg width="5" height="7" viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 4 4-4 4"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <article class="card" data-dept="Mathematics" data-status="busy">
+      <div class="card-top">
+        <div class="person">
+          <div class="avatar">
+            <div class="photo">SJ<img class="crop" src="https://www.figma.com/api/mcp/asset/e7037174-b76d-4d7b-8f32-ab627f3fe8b7.png" alt="Prof. Sarah Jenkins" onerror="this.remove()"></div>
+            <span class="badge bg-amber"></span>
+          </div>
+          <div class="person-text">
+            <div class="person-name">Prof. Sarah Jenkins</div>
+            <div class="person-role">Mathematics • Assoc. Professor</div>
+          </div>
+        </div>
+        <span class="status-pill pill-amber"><i></i>Busy</span>
+      </div>
+      <div class="location">
+        <div class="loc-left">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v1H4v17H2V2h12v1zm2 .5L22 6v15h-6V3.5zM13 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM4 22h12v-1H4v1z"/><path d="M4 3h10v18H4z" opacity=".35"/></svg>
+          <span>In Lecture Hall B-1</span>
+        </div>
+        <div class="loc-right">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Until 11:45 AM
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="updated">Updated: 09:30 AM</span>
+        <button class="btn-detail" type="button">View Detail
+          <svg width="5" height="7" viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 4 4-4 4"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <article class="card" data-dept="Electrical" data-status="available">
+      <div class="card-top">
+        <div class="person">
+          <div class="avatar">
+            <div class="photo">MC<img src="https://www.figma.com/api/mcp/asset/847bbc87-096d-48df-a73f-841bd2b06d62.png" alt="Dr. Marcus Chen" onerror="this.remove()"></div>
+            <span class="badge bg-green"></span>
+          </div>
+          <div class="person-text">
+            <div class="person-name">Dr. Marcus Chen</div>
+            <div class="person-role">Electrical Eng. • HOD &amp; Professor</div>
+          </div>
+        </div>
+        <span class="status-pill pill-green"><i></i>Available</span>
+      </div>
+      <div class="location">
+        <div class="loc-left">
+          <svg width="11" height="13" viewBox="0 0 16 20" fill="currentColor"><path d="M8 0a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+          <span>Dept Office 102</span>
+        </div>
+        <div class="loc-right">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Until 02:00 PM
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="updated">Updated: 10:05 AM</span>
+        <button class="btn-detail" type="button">View Detail
+          <svg width="5" height="7" viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 4 4-4 4"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <article class="card" data-dept="Physics" data-status="leave">
+      <div class="card-top">
+        <div class="person">
+          <div class="avatar">
+            <div class="photo">PS<img src="https://www.figma.com/api/mcp/asset/04710c66-aac8-4753-bc0f-901cb35037c1.png" alt="Dr. Priya Sharma" onerror="this.remove()"></div>
+            <span class="badge bg-grey"></span>
+          </div>
+          <div class="person-text">
+            <div class="person-name">Dr. Priya Sharma</div>
+            <div class="person-role">Physics • Asst. Professor</div>
+          </div>
+        </div>
+        <span class="status-pill pill-grey"><i></i>On Leave</span>
+      </div>
+      <div class="location">
+        <div class="loc-left muted">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM10 4h4v2h-4V4zm6 10h-3v3h-2v-3H8v-2h3V9h2v3h3v2z"/></svg>
+          <span>Reason: Medical Leave</span>
+        </div>
+        <div class="loc-right">Resumes Tomorrow</div>
+      </div>
+      <div class="card-foot">
+        <span class="updated">Updated: Yesterday</span>
+        <button class="btn-detail" type="button">View Detail
+          <svg width="5" height="7" viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 4 4-4 4"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <article class="card" data-dept="Mechanical" data-status="unavailable">
+      <div class="card-top">
+        <div class="person">
+          <div class="avatar">
+            <div class="photo">DM<img src="https://www.figma.com/api/mcp/asset/48c9e938-b4d8-44f4-897f-aaa3397e8678.png" alt="Prof. David Miller" onerror="this.remove()"></div>
+            <span class="badge bg-red"></span>
+          </div>
+          <div class="person-text">
+            <div class="person-name">Prof. David Miller</div>
+            <div class="person-role">Mechanical • Asst. Professor</div>
+          </div>
+        </div>
+        <span class="status-pill pill-red"><i></i>Unavailable</span>
+      </div>
+      <div class="location">
+        <div class="loc-left muted">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+          <span>Off Campus for Conference</span>
+        </div>
+        <div class="loc-right">Returns Friday</div>
+      </div>
+      <div class="card-foot">
+        <span class="updated">Updated: 08:00 AM</span>
+        <button class="btn-detail" type="button">View Detail
+          <svg width="5" height="7" viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 4 4-4 4"/></svg>
+        </button>
+      </div>
+    </article>
+
+  </section>
+  <div class="empty" id="empty">No faculty match your search.</div>
+
+  <!-- Contact form (3 fields only) -->
+  <section class="form-card" aria-labelledby="form-title">
+    <h2 id="form-title">Share Your Contact Details</h2>
+    <p class="lead">Leave your details and the faculty office will get back to you.</p>
+    <form id="contact-form" novalidate>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your full name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" placeholder="Phone number" autocomplete="tel" required>
+        </div>
+        <button class="btn-primary" id="submit-btn" type="submit">Send details</button>
+        <div class="form-msg" id="form-msg" role="status" aria-live="polite"></div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Info note -->
+  <div class="note">
+    <div class="note-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <p>Presence records auto-sync with college faculty portal every 5 minutes. No manual attendance or LMS overhead.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Bottom nav -->
+<nav class="nav" aria-label="Primary">
+  <div class="nav-inner">
+    <a class="active" href="#">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3V3zm10 0h8v5h-8V3zM3 13h8v8H3v-8zm10-3h8v11h-8V10z"/></svg>
+      Dashboard
+    </a>
+    <a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg>
+      Status
+    </a>
+    <a href="#">
+      <svg viewBox="0 0 24 20" fill="currentColor" style="width:22px;height:16px"><path d="M8 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 12c-3 0-8 1.5-8 4.5V19h16v-2.5C16 13.5 11 12 8 12zm8 0c-.4 0-.8 0-1.3.1 1.5 1 2.3 2.3 2.3 4.4V19h7v-2.5c0-2.7-4.3-4.5-8-4.5z"/></svg>
+      Directory
+    </a>
+    <a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:20px"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+      Schedule
+    </a>
+    <a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:20px"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5l-8-3z"/><circle cx="12" cy="10" r="2.5"/><path d="M7.5 17c1-2 2.8-3 4.5-3s3.5 1 4.5 3"/></svg>
+      Admin
+    </a>
+  </div>
+</nav>
+
+<script>
+  /* ---------- Google Sheets form (GET + no-cors, works on file://) ---------- */
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPaVC8EoxzKI4TWP9zxHk1ZX7llt4dIreQFXePDu4mfscoRzjM3UPOQx_ByY7DkjaYHg/exec";
+
+  var form = document.getElementById("contact-form");
+  var submitBtn = document.getElementById("submit-btn");
+  var msg = document.getElementById("form-msg");
+
+  function showMessage(text, type) {
+    msg.textContent = text;
+    msg.className = "form-msg show " + type;
+  }
+
+  function showSuccess() {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Send details";
+    form.reset();
+    showMessage("Thank you! Your details have been submitted.", "ok");
+  }
+
+  function showError() {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Send details";
+    showMessage("Something went wrong. Please check your connection and try again.", "err");
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    var name = document.getElementById("name").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var phone = document.getElementById("phone").value.trim();
+
+    if (!name || !email || !phone) {
+      showMessage("Please fill in your name, email and phone.", "err");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showMessage("Please enter a valid email address.", "err");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    msg.className = "form-msg";
+
+    var url = SCRIPT_URL + "?" + new URLSearchParams({ name: name, email: email, phone: phone });
+
+    fetch(url, { method: "GET", mode: "no-cors" })
+      .then(() => showSuccess())
+      .catch(() => showError());
+  });
+
+  /* ---------- Search + filter chips ---------- */
+  var cards = Array.prototype.slice.call(document.querySelectorAll("#list .card"));
+  var chips = Array.prototype.slice.call(document.querySelectorAll("#chips .chip"));
+  var searchInput = document.getElementById("search");
+  var emptyMsg = document.getElementById("empty");
+  var activeDept = "all";
+  var availableOnly = false;
+
+  function applyFilters() {
+    var q = searchInput.value.trim().toLowerCase();
+    var visible = 0;
+    cards.forEach(function (card) {
+      var text = card.textContent.toLowerCase();
+      var okSearch = !q || text.indexOf(q) !== -1;
+      var okDept = activeDept === "all" || card.getAttribute("data-dept") === activeDept;
+      var okAvail = !availableOnly || card.getAttribute("data-status") === "available";
+      var show = okSearch && okDept && okAvail;
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    emptyMsg.classList.toggle("show", visible === 0);
+  }
+
+  chips.forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      if (chip.hasAttribute("data-available")) {
+        availableOnly = !availableOnly;
+        chip.classList.toggle("active", availableOnly);
+      } else {
+        activeDept = chip.getAttribute("data-dept");
+        chips.forEach(function (c) {
+          if (!c.hasAttribute("data-available")) c.classList.toggle("active", c === chip);
+        });
+      }
+      applyFilters();
+    });
+  });
+  searchInput.addEventListener("input", applyFilters);
+</script>
+</body>
+</html>
